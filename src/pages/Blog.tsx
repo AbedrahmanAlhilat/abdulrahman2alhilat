@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/ui/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,66 +13,82 @@ interface BlogPost {
   category: string;
   tags: string[];
   slug: string;
+  content: string;
 }
 
-const Blog = () => {
-  const allPosts: BlogPost[] = [
-    {
-      title: "Getting Started with Educational Technology",
-      excerpt: "A comprehensive guide to implementing technology in educational settings effectively.",
-      date: "April 19, 2025",
-      category: "EdTech",
-      tags: ["Education", "Technology", "Getting Started", "Guide"],
-      slug: "/blog/getting-started-edtech"
-    },
-    {
-      title: "Building Interactive Learning Tools with Java",
-      excerpt: "How object-oriented programming can create engaging educational experiences for students.",
-      date: "March 28, 2025",
-      category: "Programming",
-      tags: ["Java", "OOP", "Education", "Development"],
-      slug: "/blog/interactive-learning-java"
-    },
-    {
-      title: "Arduino in the Classroom: A Hands-on Approach",
-      excerpt: "Implementing electronics projects to enhance STEM education and problem-solving skills.",
-      date: "March 15, 2025",
-      category: "Electronics",
-      tags: ["Arduino", "STEM", "Education", "Electronics"],
-      slug: "/blog/arduino-classroom"
-    },
-    {
-      title: "Digital Literacy in Jordan: Challenges and Opportunities",
-      excerpt: "Analyzing the current state of digital literacy in Jordan and strategies for improvement.",
-      date: "February 27, 2025",
-      category: "Digital Transformation",
-      tags: ["Digital Literacy", "Jordan", "Education"],
-      slug: "/blog/digital-literacy-jordan"
-    },
-    {
-      title: "The Role of AI in Personalized Learning",
-      excerpt: "How artificial intelligence can help create customized educational experiences for diverse student needs.",
-      date: "February 15, 2025",
-      category: "AI & Education",
-      tags: ["AI", "Personalized Learning", "EdTech"],
-      slug: "/blog/ai-personalized-learning"
-    },
-    {
-      title: "My First Java Project: Lessons Learned",
-      excerpt: "Reflections on building my first Java application and the principles of object-oriented programming.",
-      date: "January 30, 2025",
-      category: "Programming",
-      tags: ["Java", "Beginner", "Learning"],
-      slug: "/blog/first-java-project"
-    },
-  ];
+const defaultPosts: BlogPost[] = [
+  {
+    title: "Getting Started with Educational Technology",
+    excerpt: "A comprehensive guide to implementing technology in educational settings effectively.",
+    date: "April 19, 2025",
+    category: "EdTech",
+    tags: ["Education", "Technology", "Getting Started", "Guide"],
+    slug: "/blog/getting-started-edtech",
+    content: "Welcome to this guide on educational technology..."
+  },
+  {
+    title: "Building Interactive Learning Tools with Java",
+    excerpt: "How object-oriented programming can create engaging educational experiences for students.",
+    date: "March 28, 2025",
+    category: "Programming",
+    tags: ["Java", "OOP", "Education", "Development"],
+    slug: "/blog/interactive-learning-java",
+    content: "This article explores how object-oriented programming can create engaging educational experiences for students..."
+  },
+  {
+    title: "Arduino in the Classroom: A Hands-on Approach",
+    excerpt: "Implementing electronics projects to enhance STEM education and problem-solving skills.",
+    date: "March 15, 2025",
+    category: "Electronics",
+    tags: ["Arduino", "STEM", "Education", "Electronics"],
+    slug: "/blog/arduino-classroom",
+    content: "This article discusses implementing electronics projects to enhance STEM education and problem-solving skills..."
+  },
+  {
+    title: "Digital Literacy in Jordan: Challenges and Opportunities",
+    excerpt: "Analyzing the current state of digital literacy in Jordan and strategies for improvement.",
+    date: "February 27, 2025",
+    category: "Digital Transformation",
+    tags: ["Digital Literacy", "Jordan", "Education"],
+    slug: "/blog/digital-literacy-jordan",
+    content: "This article analyzes the current state of digital literacy in Jordan and discusses strategies for improvement..."
+  },
+  {
+    title: "The Role of AI in Personalized Learning",
+    excerpt: "How artificial intelligence can help create customized educational experiences for diverse student needs.",
+    date: "February 15, 2025",
+    category: "AI & Education",
+    tags: ["AI", "Personalized Learning", "EdTech"],
+    slug: "/blog/ai-personalized-learning",
+    content: "This article discusses how artificial intelligence can help create customized educational experiences for diverse student needs..."
+  },
+  {
+    title: "My First Java Project: Lessons Learned",
+    excerpt: "Reflections on building my first Java application and the principles of object-oriented programming.",
+    date: "January 30, 2025",
+    category: "Programming",
+    tags: ["Java", "Beginner", "Learning"],
+    slug: "/blog/first-java-project",
+    content: "This article reflects on building my first Java application and the principles of object-oriented programming..."
+  },
+];
 
+const Blog = () => {
+  const [posts, setPosts] = useState<BlogPost[]>(defaultPosts);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   
-  const allTags = Array.from(new Set(allPosts.flatMap(post => post.tags))).sort();
+  useEffect(() => {
+    const storedPosts = localStorage.getItem("blogPosts");
+    if (storedPosts) {
+      const parsedPosts = JSON.parse(storedPosts);
+      setPosts([...parsedPosts, ...defaultPosts]);
+    }
+  }, []);
+
+  const allTags = Array.from(new Set(posts.flatMap(post => post.tags))).sort();
   
-  const filteredPosts = allPosts.filter(post => {
+  const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     
